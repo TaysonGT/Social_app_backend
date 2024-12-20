@@ -90,17 +90,8 @@ const updatePost = async (req: Request, res: Response) => {
 const allComments = async (req: Request, res: Response) => {
   const { id } = req.params
   const post = await postRepo.findOne({where: {id}})
-  const comments = await commentRepo.find({where: {post_id: id}})
-  const likes = await likeRepo.find()
-  let comments_likes:any = []
-  if(post && comments){
-    for(let x=0;x<comments.length;x++){
-      let comment_likes = {
-        comment_id: comments[x].id, 
-        likes: likes.filter((like)=> like.comment_id == comments[x].id)
-      }
-      comments_likes.push(comment_likes)
-    }
+  if (post){
+    const comments = await commentRepo.find({where: {post_id: id}})
     res.json({ comments, success:true })  
   }else{
     res.json({ success: false, message: "المنشور غير موجود" });
