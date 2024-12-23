@@ -136,15 +136,49 @@ const allRequests = async (req: Request, res: Response) => {
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   if(user_data){
     const user_id = JSON.parse(user_data).user_id
-    const friendRequests = await friendRequestRepo.find({where:{receiver_id:user_id, status:'pending'}})
-    if(friendRequests){
-      const usersIds = friendRequests.map((friendRequest)=> friendRequest.sender_id)
+    const requests = await friendRequestRepo.find({where:{receiver_id:user_id, status:'pending'}})
+    if(requests){
+      const usersIds = requests.map((friendRequest)=> friendRequest.sender_id)
       const users = await userRepo.find({where: { id: In(usersIds)}})
-      res.json({friendRequests, users})
+      res.json({requests, users})
+    }
+  }
+}
+const allMyRequests = async (req: Request, res: Response) => {
+  const user_data = req.headers.user_data?.toString().split(' ')[1]
+  if(user_data){
+    const user_id = JSON.parse(user_data).user_id
+    const requests = await friendRequestRepo.find({where:{sender_id:user_id, status:'pending'}})
+    if(requests){
+      const usersIds = requests.map((friendRequest)=> friendRequest.sender_id)
+      const users = await userRepo.find({where: { id: In(usersIds)}})
+      res.json({requests, users})
     }
   }
 }
 
+const getRequest = async (req: Request, res: Response) => {
+  const user_data = req.headers.user_data?.toString().split(' ')[1]
+  const friend_id = req.params.id
+  if(user_data && friend_id){
+    const user_id = JSON.parse(user_data).user_id
+    const request = await friendRequestRepo.findOne({where:{sender_id:user_id, receiver_id:friend_id, status: 'pending'}})
+    res.json({request})
+  }else res.json({success:false, message:"من فضلك سجل دخول مرة أخرى"})
+}
+
+const removeRequest = async (req: Request, res: Response) => {
+  const user_data = req.headers.user_data?.toString().split(' ')[1]
+  const id = req.params.id
+  if(user_data && id){
+    const user_id = JSON.parse(user_data).user_id
+    const request = await friendRequestRepo.findOne({where:{id, sender_id:user_id}})
+    if(request){
+      await friendRequestRepo.remove(request)
+      res.json({success: true, message:"تم حذف الطلب"})
+    }else res.json({success: false, message: 'هذا الطلب غير موجود'})
+  }else res.json({success:false, message:"من فضلك سجل دخول مرة أخرى"})
+}
 
 
 export{
@@ -152,8 +186,11 @@ export{
   allMyFriends,
   allFriends,
   allRequests,
+  allMyRequests,
+  getRequest,
   addFriend,
   removeFriend,
   declineFriend,
-  acceptFriend
+  acceptFriend,
+  removeRequest
 }
