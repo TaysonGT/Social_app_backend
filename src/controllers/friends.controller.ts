@@ -63,7 +63,7 @@ const removeFriend = async (req: Request, res: Response) => {
   
 }
 const allMyFriends = async (req: Request, res: Response) => {
-  const user_data = req.headers.user_data?.toString().split(' ')[1]
+  const user_data:string = req.headers.user_data?.toString().split(' ')[1] || ''
   if(user_data){
     const user_id = JSON.parse(user_data).user_id
     const friends = await friendRepo.find({where:{user_id}})
