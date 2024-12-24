@@ -19,13 +19,14 @@ const normal = async (req: Request, res: Response) => {
       .orWhere('users.lastname LIKE :query', { query: `%${query}%` })
       .getMany();
     if(users){
-      const userIds = users.map(user=> user.id)
+      const filteredUsers = users.filter((user)=> user.id != user_id)
+      const userIds = filteredUsers.map(user=> user.id)
       const posts = await postRepo
         .createQueryBuilder('posts')
         .where('posts.content LIKE :query', { query: `%${query}%` })
         .orWhere('posts.user_id In (:...userIds)', {userIds})
         .getMany();
-        res.json({ posts: posts.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at)), users: users.filter((user)=>user.id != user_id)})
+        res.json({ posts: posts.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at)), users: filteredUsers})
     }else res.json({success: false, message: "حدث خطأ"})
   }
 }
