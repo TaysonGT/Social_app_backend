@@ -101,12 +101,12 @@ const declineFriend = async (req: Request, res: Response) => {
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   const id = req.params.id
   if(user_data && id){
-    const friendRequest = await friendRequestRepo.find({where:{id, status: 'pending'}})
+    const friendRequest = await friendRequestRepo.findOne({where:{id, status: 'pending'}})
     if(friendRequest){
-      const declineRequest = Object.assign(friendRequest, {status: 'declined'})
+      const declineRequest = Object.assign(friendRequest, {...friendRequest, status: 'declined'})
       await friendRequestRepo.save(declineRequest)
       res.json({success: true, message: "تم رفض طلب الصداقة"})
-    }
+    }else res.json({success:false, message:"هذا الطلب غير موجود"})
   }else res.json({success:false, message:"من فضلك سجل دخول مرة أخرى"})
 }
 
@@ -126,9 +126,9 @@ const acceptFriend = async (req: Request, res: Response) => {
         await friendRequestRepo.save(acceptRequest)
         await friendRepo.save(myFriendData)
         await friendRepo.save(hisFriendData)
-        res.json({success: true, message: ` أنت و${friend.firstname} أصبحتما أصدقاء`})
+        res.json({success: true, message: 'تم قبول طلب الصداقة'})
       }else res.json({success:false, message:"هذا المستخدم غير موجود"})
-    }else res.json({success:false, message:"من فضلك سجل دخول مرة أخرى"})
+    }else res.json({success:false, message: "لقد وافقت على طلب الصداقة من قبل"})
   }else res.json({success:false, message:"من فضلك سجل دخول مرة أخرى"})
 }
 
@@ -144,7 +144,7 @@ const allRequests = async (req: Request, res: Response) => {
     }
   }
 }
-const allMyRequests = async (req: Request, res: Response) => {
+const allSentRequests = async (req: Request, res: Response) => {
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   if(user_data){
     const user_id = JSON.parse(user_data).user_id
@@ -186,7 +186,7 @@ export{
   allMyFriends,
   allFriends,
   allRequests,
-  allMyRequests,
+  allSentRequests,
   getRequest,
   addFriend,
   removeFriend,

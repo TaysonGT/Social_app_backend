@@ -6,7 +6,7 @@ import {
   removeFriend,
   declineFriend,
   allRequests,
-  allMyRequests,
+  allSentRequests,
   getRequest,
   removeRequest,
   acceptFriend
@@ -20,7 +20,7 @@ friendRouter.get('/all', allMyFriends)
 friendRouter.get('/all/:id', allFriends)
 friendRouter.get('/single/:id', getFriend)
 friendRouter.get('/request/all', allRequests)
-friendRouter.get('/request/me', allMyRequests)
+friendRouter.get('/request/me', allSentRequests)
 friendRouter.get('/request/:id', getRequest)
 friendRouter.post('/request/:id', addFriend)
 friendRouter.delete('/request/:id', removeRequest)

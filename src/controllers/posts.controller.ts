@@ -169,16 +169,16 @@ const toggleLike = async (req: Request, res: Response) => {
     }else{
       likeData.comment_id= id 
     }
-    const like = likeRepo.create(likeData);
-    const results = await likeRepo.save(like);
-    res.json({ results, message: "تم الاعجاب", success: true });
+    const createLike = likeRepo.create(likeData);
+    const like = await likeRepo.save(createLike);
+    res.json({ like, message: "تم الاعجاب", success: true });
   }else if(duplicate && user_data){
     const user_id = JSON.parse(user_data).user_id
     if(user_id != duplicate.user_id){
       res.json({ message: "لا تملك الصلاح لتنفيذ الامر", success: false });
     }else{
-      const deletedLike = await likeRepo.remove(duplicate);
-      res.json({ deletedLike , message: "تمت ازالة الاعجاب بنجاح", success: true });
+      const like = await likeRepo.remove(duplicate);
+      res.json({ like , message: "تمت ازالة الاعجاب بنجاح", success: true });
     } 
   }
   else
