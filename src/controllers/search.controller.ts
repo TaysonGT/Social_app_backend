@@ -26,7 +26,7 @@ const normal = async (req: Request, res: Response) => {
         .where('posts.content LIKE :query', { query: `%${query}%` })
         .orWhere('posts.user_id In (:...userIds)', {userIds})
         .getMany();
-        res.json({ posts: posts.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at)), users: filteredUsers})
+        res.json({ posts: posts.sort((a,b)=> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()), users: filteredUsers})
     }else res.json({success: false, message: "حدث خطأ"})
   }
 }

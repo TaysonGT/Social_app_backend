@@ -13,14 +13,14 @@ const likeRepo = myDataSource.getRepository(Like)
 
 const allPosts = async (req: Request, res: Response) => {
   const posts = await postRepo.find()
-  res.json({ posts: posts.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at))})
+  res.json({ posts: posts.sort((a,b)=> new Date(b.created_at).getTime() - new Date(a.created_at).getTime())})
 }
 
 const allUserPosts = async (req: Request, res: Response) => {
   const id = req.params.id
   if(id){
     const posts = await postRepo.find({where: {user_id:id}})
-    res.json({ posts: posts.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at))})
+    res.json({ posts: posts.sort((a,b)=> new Date(b.created_at).getTime() - new Date(a.created_at).getTime())})
   } else res.json({ success: false, message: "حدث خطأ" });
 }
 
