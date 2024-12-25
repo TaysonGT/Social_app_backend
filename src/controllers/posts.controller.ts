@@ -155,7 +155,7 @@ const toggleLike = async (req: Request, res: Response) => {
   let user_id = ''
   let duplicate = null
   
-  if(user_data) user_id = JSON.parse(user_data).user_id;
+  if(user_data) user_id = JSON.parse(user_data).id;
   if(type == 'post'){
     duplicate = await likeRepo.findOne({ where : { user_id, post_id: id }})
   }else{
