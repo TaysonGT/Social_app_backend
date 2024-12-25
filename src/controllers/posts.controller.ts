@@ -92,7 +92,9 @@ const allComments = async (req: Request, res: Response) => {
   const post = await postRepo.findOne({where: {id}})
   if (post){
     const comments = await commentRepo.find({where: {post_id: id}})
-    res.json({ comments, success:true })  
+    if(comments){
+      res.json({ comments: comments.sort((a,b)=> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) , success:true })  
+    }
   }else{
     res.json({ success: false, message: "المنشور غير موجود" });
   }
