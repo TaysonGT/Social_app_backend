@@ -11,7 +11,7 @@ const normal = async (req: Request, res: Response) => {
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   
   if(user_data){
-    const user_id = JSON.parse(user_data).user_id 
+    const user_id = JSON.parse(user_data).id 
     const users = await userRepo
       .createQueryBuilder('users')
       .where('users.username LIKE :query', { query: `%${query}%` })

@@ -16,7 +16,7 @@ const addFriend = async (req: Request, res: Response) => {
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   
   if (user_data && friend_id) {
-    const user_id = JSON.parse(user_data).user_id
+    const user_id = JSON.parse(user_data).id
     const friend = await userRepo.findOne({where:{id: user_id}})
     const isFriend = await friendRepo.findOne({where:{user_id, friend_id}})
     const isFriendRequest = await friendRequestRepo.findOne({where:{sender_id: user_id, receiver_id:friend_id, status: 'pending'}})
@@ -44,7 +44,7 @@ const removeFriend = async (req: Request, res: Response) => {
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   
   if (user_data && friend_id) {
-    const user_id = JSON.parse(user_data).user_id
+    const user_id = JSON.parse(user_data).id
     const friend = await userRepo.findOne({where:{id:user_id}})
     const isFriend = await friendRepo.findOne({where:{user_id, friend_id}})
     if(!friend){
@@ -65,7 +65,7 @@ const removeFriend = async (req: Request, res: Response) => {
 const allMyFriends = async (req: Request, res: Response) => {
   const user_data:string = req.headers.user_data?.toString().split(' ')[1] || ''
   if(user_data){
-    const user_id = JSON.parse(user_data).user_id
+    const user_id = JSON.parse(user_data).id
     const friends = await friendRepo.find({where:{user_id}})
     if(friends){
       const usersIds = friends.map((friend)=> friend.friend_id)
@@ -91,7 +91,7 @@ const getFriend = async (req: Request, res: Response) => {
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   const friend_id = req.params.id
   if(user_data && friend_id){
-    const user_id = JSON.parse(user_data).user_id
+    const user_id = JSON.parse(user_data).id
     const friend = await friendRepo.find({where:{user_id, friend_id}})
     res.json({friend})
   }else res.json({success:false, message:"من فضلك سجل دخول مرة أخرى"})
@@ -114,7 +114,7 @@ const acceptFriend = async (req: Request, res: Response) => {
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   const id = req.params.id
   if(user_data && id){
-    const user_id = JSON.parse(user_data).user_id
+    const user_id = JSON.parse(user_data).id
     const friendRequest = await friendRequestRepo.findOne({where:{id, status: 'pending'}})
     if(friendRequest){
       const friend = await userRepo.findOne({where:{id: friendRequest.sender_id}})
@@ -135,7 +135,7 @@ const acceptFriend = async (req: Request, res: Response) => {
 const allRequests = async (req: Request, res: Response) => {
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   if(user_data){
-    const user_id = JSON.parse(user_data).user_id
+    const user_id = JSON.parse(user_data).id
     const requests = await friendRequestRepo.find({where:{receiver_id:user_id, status:'pending'}})
     if(requests){
       const usersIds = requests.map((friendRequest)=> friendRequest.sender_id)
@@ -147,7 +147,7 @@ const allRequests = async (req: Request, res: Response) => {
 const allSentRequests = async (req: Request, res: Response) => {
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   if(user_data){
-    const user_id = JSON.parse(user_data).user_id
+    const user_id = JSON.parse(user_data).id
     const requests = await friendRequestRepo.find({where:{sender_id:user_id, status:'pending'}})
     if(requests){
       const usersIds = requests.map((friendRequest)=> friendRequest.sender_id)
@@ -161,7 +161,7 @@ const getRequest = async (req: Request, res: Response) => {
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   const friend_id = req.params.id
   if(user_data && friend_id){
-    const user_id = JSON.parse(user_data).user_id
+    const user_id = JSON.parse(user_data).id
     const request = await friendRequestRepo.findOne({where:{sender_id:user_id, receiver_id:friend_id, status: 'pending'}})
     res.json({request})
   }else res.json({success:false, message:"من فضلك سجل دخول مرة أخرى"})
@@ -171,7 +171,7 @@ const removeRequest = async (req: Request, res: Response) => {
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   const id = req.params.id
   if(user_data && id){
-    const user_id = JSON.parse(user_data).user_id
+    const user_id = JSON.parse(user_data).id
     const request = await friendRequestRepo.findOne({where:{id, sender_id:user_id}})
     if(request){
       await friendRequestRepo.remove(request)

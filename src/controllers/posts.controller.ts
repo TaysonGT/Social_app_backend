@@ -29,7 +29,7 @@ const addPost = async (req: Request, res: Response) => {
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   
   if (content&&user_data) {
-      const user_id = JSON.parse(user_data).user_id
+      const user_id = JSON.parse(user_data).id
       const postData:addPostDto = { user_id, content };
       const post = postRepo.create(postData);
       const results = await postRepo.save(post);
@@ -52,7 +52,7 @@ const deletePost = async (req: Request, res: Response) => {
   const post = await postRepo.findOne({ where: { id } });
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   if (post && user_data) {
-    const user_id = JSON.parse(user_data).user_id
+    const user_id = JSON.parse(user_data).id
     if(user_id != post.user_id){
       res.json({ message: "لا تملك الصلاح لتنفيذ الامر", success: false });
     } else {
@@ -73,7 +73,7 @@ const updatePost = async (req: Request, res: Response) => {
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   
   if(post && user_data){
-    const user_id = JSON.parse(user_data).user_id
+    const user_id = JSON.parse(user_data).id
     if( user_id != post.user_id ){
       res.json({ message: "لا تملك الصلاحيات لتنفيذ الامر", success: false });
     } else if (!content || content!='' || content.trim() == post.content.trim()){
@@ -103,7 +103,7 @@ const addComment = async (req: Request, res: Response) => {
   const { id } = req.params
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   if (content && user_data) {
-    const user_id = JSON.parse(user_data).user_id
+    const user_id = JSON.parse(user_data).id
     const commentData:addCommentDto = { user_id, post_id: id , content };
     const comment = commentRepo.create(commentData);
     const results = await commentRepo.save(comment);
@@ -136,7 +136,7 @@ const deleteComment = async (req: Request, res: Response) => {
   const comment = await commentRepo.findOne({ where: { id } });
   const user_data = req.headers.user_data?.toString().split(' ')[1]
   if (comment && user_data) {
-    const user_id = JSON.parse(user_data).user_id
+    const user_id = JSON.parse(user_data).id
     if(user_id != comment.user_id){
       res.json({ message: "لا تملك الصلاح لتنفيذ الامر", success: false });
     } else{
@@ -173,7 +173,7 @@ const toggleLike = async (req: Request, res: Response) => {
     const like = await likeRepo.save(createLike);
     res.json({ like, message: "تم الاعجاب", success: true });
   }else if(duplicate && user_data){
-    const user_id = JSON.parse(user_data).user_id
+    const user_id = JSON.parse(user_data).id
     if(user_id != duplicate.user_id){
       res.json({ message: "لا تملك الصلاح لتنفيذ الامر", success: false });
     }else{
