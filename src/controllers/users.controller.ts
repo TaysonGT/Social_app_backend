@@ -27,9 +27,9 @@ const userSignup = async (req: Request, res: Response) => {
       const userData = { username: trimmedUser, password: trimmedPass, firstname, lastname, email, gender };
       const user = userRepo.create(userData);
       await userRepo.save(user);
+      const {password, ...safeUser} = user
       const token = jwt.sign({ trimmedUser }, "something-complicated", { expiresIn: '8h' })
-      res.json({ messsage: "تم إنشاء حسابك بنجاح", success: true, token,
-      username: user.username, user_id: user.id, firstname: user.firstname,lastname: user.lastname, expDate: Date.now() + 8 * 60 * 60 * 1000 })
+      res.json({ messsage: "تم إنشاء حسابك بنجاح", success: true, token, user: safeUser, expDate: Date.now() + 8 * 60 * 60 * 1000 })
     }
   }
   else
@@ -40,8 +40,8 @@ const findUser = async (req: Request, res: Response) => {
   const { id } = req.params;
   const user = await userRepo.findOne({ where: { id } });
   if(user){
-    let {password, ...safeData} = user 
-    res.json({ user: safeData, success:true}) 
+    let {password, ...safeUser} = user 
+    res.json({ user: safeUser, success:true}) 
   }else{
     res.json({ message: "هذا المستخدم غير موجود", success: false });
     
@@ -77,7 +77,8 @@ const updateUser = async (req: Request, res: Response) => {
       const userData = { username, password, firstname, lastname, email };
       const updatedUser = Object.assign(user, userData);
       const updated = await userRepo.save(updatedUser);
-      res.json({ success: true, updated, message: "تم تعديل الحساب" });
+      const {password: userPassword, ...safeUpdated} = updated
+      res.json({ success: true, user: safeUpdated, message: "تم تعديل الحساب" });
     }
   }
   else res.json({ success: false, message: "حدث خطأ" });
@@ -93,11 +94,10 @@ const userLogin = async (req: Request, res: Response) => {
   if(!username && !password){
     res.json({ message: "برجاء ملء كل البيانات", success: false })
   }else if (user) {
-    console.log(user.password, trimmedPass)
+    const {password, ...safeUser} = user
     if (user.password == trimmedPass) {
       const token = jwt.sign({ trimmedUser }, "something-complicated", { expiresIn: '8h' })
-      res.json({ messsage: "تم تسجيل الدخول بنجاح ", success: true, token,
-      username: user.username, user_id: user.id, firstname: user.firstname, lastname: user.lastname, expDate: Date.now() + 8 * 60 * 60 * 1000 })
+      res.json({ messsage: "تم تسجيل الدخول بنجاح ", success: true, token, user: safeUser, expDate: Date.now() + 8 * 60 * 60 * 1000 })
     } else {
       res.json({ message: "كلمة السر خطأ", success: false })
     }
@@ -109,14 +109,16 @@ const userLogin = async (req: Request, res: Response) => {
 
 const allUsers = async (req: Request, res: Response) => {
   const users = await userRepo.find()
-  res.json({ users })
+  const safeUsers = users.map(({password, ...rest})=>  rest )
+  res.json({ users: safeUsers })
 }
 
 const usersRange = async (req: Request, res: Response) => {
   const {ids} = req.body
   if(ids){
     const users = await userRepo.find({where: {id: In(ids)}})
-    res.json({users})
+    const safeUsers = users.map(({password, ...rest})=>  rest )
+    res.json({users: safeUsers})
   }
 }
 

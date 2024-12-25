@@ -23,9 +23,9 @@ postRouter.put('/:id', updatePost);
 postRouter.delete('/:id', deletePost);
 postRouter.post('/like/:type/:id', toggleLike);
 postRouter.get('/like/:type/:id', getLikes);
-postRouter.get('/comment/all/:id', allComments);
 postRouter.post('/comment/:id', addComment);
 postRouter.put('/comment/:id', updateComment);
+postRouter.get('/comment/all/:id', allComments);
 postRouter.delete('/comment/:id', deleteComment);
 
 
